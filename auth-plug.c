@@ -31,8 +31,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <openssl/evp.h>
-#include <mosquitto.h>
 #include <mosquitto_broker.h>
+#include <mosquitto.h>
 #include <mosquitto_plugin.h>
 #include <fnmatch.h>
 #include <time.h>
