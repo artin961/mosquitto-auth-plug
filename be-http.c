@@ -123,7 +123,7 @@ static int http_post(void *handle, char *uri, const char *clientid, const char *
 	if(conf->basic_auth !=NULL){
 		headerlist = curl_slist_append(headerlist, conf->basic_auth);
 	}
-
+	headerlist = curl_slist_append(headerlist, "Content-Type: application/json");
 	//_log(LOG_NOTICE, "u=%s p=%s t=%s acc=%d", username, password, topic, acc);
 
 	urllen = strlen(conf->hostname) + strlen(uri) + 20;
@@ -175,7 +175,8 @@ static int http_post(void *handle, char *uri, const char *clientid, const char *
 		_fatal("ENOMEM");
 		return BACKEND_ERROR;
 	}
-	sprintf(data, "%susername=%s&password=%s&topic=%s&acc=%s&clientid=%s",
+	//sprintf(data, "%susername=%s&password=%s&topic=%s&acc=%s&clientid=%s",
+	sprintf(data, "%s{\"username\":\"%s\",\"password\":\"%s\",\"topic\":\"%s\",\"acc\":\"%s\",\"clientid\":\"%s\"}",
 		string_envs,
 		escaped_username,
 		escaped_password,
