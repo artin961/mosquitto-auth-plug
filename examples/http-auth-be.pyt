@@ -13,7 +13,7 @@ from urllib.parse import unquote
 app = application = bottle.Bottle()
 
 
-@app.route('/api/broker/auth', method='POST')
+@app.route('/auth', method='POST')
 def auth():
     response.content_type = 'application/json'
     response.status = 403
@@ -27,7 +27,7 @@ def auth():
 
     return None
 
-@app.route('/api/broker/sup', method='POST')
+@app.route('/superuser', method='POST')
 def superuser():
     response.content_type = 'application/json'
     response.status = 403
@@ -44,7 +44,7 @@ def superuser():
     return None
 
 
-@app.route('/api/broker/acl', method='POST')
+@app.route('/acl', method='POST')
 def acl():
     response.content_type = 'application/json'
     response.status = 403
@@ -54,8 +54,8 @@ def acl():
     data = unquote(data)
     print(data)
     jj=json.loads(data)
-    #if  jj['topic'] == 'device/aabccaabbcc/commands':
-    response.status = 200
+    if jj['username'] == 'device' and jj['topic'] == 'device/aabccaabbcc/commands':
+        response.status = 200
 
     return None
 
