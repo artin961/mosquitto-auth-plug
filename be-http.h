@@ -45,6 +45,8 @@ struct http_backend {
 	char *aclcheck_envs;
 	char *with_tls;
 	char *basic_auth;
+	char *superusername;
+	char *superuserpass;
 	int retry_count;
 };
 

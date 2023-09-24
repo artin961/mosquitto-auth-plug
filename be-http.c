@@ -286,7 +286,21 @@ void *be_http_init()
 		return (NULL);
 	}
 
+
 	conf = (struct http_backend *)malloc(sizeof(struct http_backend));
+
+	
+	if ((conf->superusername = p_stab("http_static_superuser_username")) != NULL)
+	{
+		_log(LOG_DEBUG, "Found Static Superuser: %s", conf->superusername);
+		if ((conf->superuserpass = p_stab("http_static_superuser_password")) == NULL)
+		{
+			_fatal("Mandatory parameter `http_static_superuser_password' missing. It is required if `http_static_superuser_username` is set");
+			return (NULL);
+		}
+	}
+
+
 	conf->hostname = hostname;
 	conf->port = p_stab("http_port") == NULL ? 80 : atoi(p_stab("http_port"));
 	if (p_stab("http_hostname") != NULL)
@@ -352,6 +366,14 @@ void be_http_destroy(void *handle)
 int be_http_getuser(void *handle, const char *username, const char *password, char **phash, const char *clientid)
 {
 	struct http_backend *conf = (struct http_backend *)handle;
+	// CHECK IF IT IS LOCAL SUPERUSER
+	if (conf->superusername != NULL && conf->superuserpass != NULL)
+	{
+		if (strcmp(conf->superusername, username)==0 && strcmp(conf->superuserpass, password)==0)
+			return BACKEND_ALLOW;
+	}
+
+	
 	int re, try;
 	if (username == NULL)
 	{
@@ -372,8 +394,15 @@ int be_http_getuser(void *handle, const char *username, const char *password, ch
 int be_http_superuser(void *handle, const char *username)
 {
 	struct http_backend *conf = (struct http_backend *)handle;
+	// CHECK IF IT IS LOCAL SUPERUSER
+	if (conf->superusername != NULL)
+	{
+		if (strcmp(conf->superusername, username)==0)
+			return BACKEND_ALLOW;
+		return BACKEND_DEFER;
+	}
+	
 	int re, try;
-
 	re = BACKEND_ERROR;
 	try = 0;
 	while (re == BACKEND_ERROR && try <= conf->retry_count)
